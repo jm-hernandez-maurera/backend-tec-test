@@ -11,8 +11,10 @@ class PricesServices
         $mutual_funds = [
             [
                 'symbol' => 'APPL',
-                'price' => 188.97,
-                'last_price_datetime' => '2023-10-30T17:31:18-04:00'
+//                'price' => 188.97,
+                'price' => 189.97,
+                //'last_price_datetime' => '2023-10-30T17:31:18-04:00'
+                'last_price_datetime' => '2023-10-31T17:31:18-04:00'
             ], [
                 'symbol' => 'TSLA',
                 'price' => 244.42,
