@@ -16,4 +16,16 @@ class SecurityPrice extends Model
      * @var array<string>|bool
      */
     protected $guarded = ['id'];
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'as_of_date' => 'datetime:Y-m-d H:i:s',
+        ];
+    }
 }

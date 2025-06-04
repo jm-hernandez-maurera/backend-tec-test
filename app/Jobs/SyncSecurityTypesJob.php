@@ -4,6 +4,9 @@ namespace App\Jobs;
 
 use App\Models\Security;
 use App\Models\SecurityType;
+use App\Services\SecurityPriceService;
+use App\Services\SecurityService;
+use App\Services\SecurityTypeService;
 use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
@@ -26,9 +29,13 @@ class SyncSecurityTypesJob implements ShouldQueue
     /**
      * Execute the job.
      */
-    public function handle(): void
+    public function handle(
+        SecurityPriceService $securityPriceService,
+        SecurityService $securityService,
+        SecurityTypeService $securityTypeService): void
     {
-        $securityTypes = SecurityType::all();
+
+        $securityTypes = $securityTypeService->getAll();
 
         foreach ($securityTypes as $securityType) {
             $prices = json_decode((PricesServices::get($securityType->slug))->getContent(), true)['results'];
@@ -37,10 +44,11 @@ class SyncSecurityTypesJob implements ShouldQueue
                 Log::info($prices);
                 $names = Arr::pluck($prices, 'symbol');
                 Log::info($names);
-                $securities = Security::with(['securityPrices'])
-                    ->where('security_type_id', $securityType->id)
-                    ->whereIn('symbol', $names)
-                    ->get();
+
+                $securities = $securityService->getAll([
+                    'ofType' => $securityType->id,
+                    'ofSymbols' => $names
+                ], ['securityPrices']);
                 Log::info($securities);
 
                 if($securities->isNotEmpty()) {
@@ -50,27 +58,17 @@ class SyncSecurityTypesJob implements ShouldQueue
                         Log::info("SECURITY");
                         Log::info($security);
                         if ($security->securityPrices->isEmpty()) {
-                            //crear
-                            Log::info("Crear");
-                            $securityPrice = $security->securityPrices()->create([
+                            $securityPriceService->createSecurityPrice([
+                                'security_id' => $security->id,
                                 'last_price' => $price['price'],
                                 'as_of_date' => $price['last_price_datetime'],
                             ]);
                         } else {
-                            //update
-                            Log::info("Update");
                             $securityPrice = $security->securityPrices->last();
-                            Log::info($securityPrice);
-                            //validar que no este actualizado ya
-                            $priceDatetime = Carbon::make($price['last_price_datetime'])->timezone('UTC');
-                            Log::info($priceDatetime);
-                            Log::info($securityPrice->as_of_date);
-                            if ($securityPrice->as_of_date != $price['last_price_datetime']) {
-                                //actualizar si no ya esta actualizado
-                                $securityPrice->last_price = $price['price'];
-                                $securityPrice->as_of_date = $price['last_price_datetime'];
-                                $securityPrice->save();
-                            }
+                            $securityPriceService->updateSecurityPrice($securityPrice, [
+                                'last_price' => $price['price'],
+                                'as_of_date' => Carbon::make($price['last_price_datetime'])->timezone('UTC'),
+                            ]);
                         }
                     }
                 } else {
