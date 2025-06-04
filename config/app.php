@@ -123,4 +123,29 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    'security_types_names' => [
+        'Mutual Funds',
+        'Equity Funds',
+        'Bond Funds',
+        'Money Market Funds',
+        'Balanced Funds'
+    ],
+
+    'securities_symbols' => [
+        'Mutual Funds' => [
+            'APPL', 'TSLA', 'VSMPX', 'FXAIX'
+        ],
+        'Equity Funds' => [
+            'MOMF', 'EMCF', 'QMCF', 'NIGF'
+        ],
+        'Bond Funds' => [
+            'ABNFX', 'LTEFX', 'MFAFX', 'TEAFX'
+        ],
+        'Money Market Funds' => [
+            'SNVXX', 'SGUXX', 'SNOXX', 'SCOXX'
+        ],
+        'Balanced Funds' => [
+            'TRAIX', 'VWENX', 'RBAIX', 'VBAIX'
+        ]
+    ]
 ];

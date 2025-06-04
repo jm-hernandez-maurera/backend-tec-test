@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\SecurityType;
 use App\Models\SecurityPrice;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Security extends Model
 {
@@ -24,7 +25,7 @@ class Security extends Model
     /**
      * Get the prices for the security.
      */
-    public function securityPrices(): HasMany
+    public function securityPrices()
     {
         return $this->hasMany(SecurityPrice::class);
     }
