@@ -6,12 +6,10 @@ use App\Models\SecurityType;
 use App\Services\SyncSecurityPricesService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
-use Illuminate\Bus\Batchable;
-use Illuminate\Support\Facades\Log;
 
 class UpdateSecurityPricesJob implements ShouldQueue
 {
-    use Queueable, Batchable;
+    use Queueable;
 
     /**
      *
@@ -39,12 +37,6 @@ class UpdateSecurityPricesJob implements ShouldQueue
      */
     public function handle(SyncSecurityPricesService $syncSecurityPricesService): void
     {
-        if ($this->batch()->cancelled()) {
-            // Determine if the batch has been cancelled...
-            Log::notice("Batch UpdateSecurityPricesJob was cancelled.");
-            return;
-        }
-
         $syncSecurityPricesService->syncSecurityPricesByType($this->securityType, $this->prices);
     }
 }

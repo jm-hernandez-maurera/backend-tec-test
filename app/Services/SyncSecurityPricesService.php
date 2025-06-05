@@ -44,7 +44,7 @@ class SyncSecurityPricesService
     public function getPricesToSync(SecurityType $securityType): array
     {
         Log::info("getPricesToSync");
-        $response = PricesServices::get($securityType->slug);
+        $response = PricesServices::getBySecurityTypeSlug($securityType->slug);
         Log::info($response);
         if($result = $response->getContent()) {
             $prices = json_decode($result, true);

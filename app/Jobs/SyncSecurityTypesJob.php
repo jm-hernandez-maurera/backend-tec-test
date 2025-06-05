@@ -9,10 +9,11 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Bus\Batch;
 use Illuminate\Support\Facades\Bus;
 use Throwable;
+use Illuminate\Foundation\Bus\Dispatchable;
 
 class SyncSecurityTypesJob implements ShouldQueue
 {
-    use Queueable;
+    use Dispatchable, Queueable;
 
     /**
      * Create a new job instance.
@@ -43,13 +44,13 @@ class SyncSecurityTypesJob implements ShouldQueue
         })->then(function (Batch $batch) {
             // All jobs completed successfully...
             Log::info("***SyncSecurityTypesJob: All jobs completed successfully...");
-        })->catch(function (Batch $batch, Throwable $e) {
+        })->catch(function (Batch $batch, $e) {
             // First batch job failure detected...
             Log::info("***SyncSecurityTypesJob: First batch job failure detected...");
         })->finally(function (Batch $batch) {
             // The batch has finished executing...
             Log::info("***SyncSecurityTypesJob: The batch has finished executing...");
-        })->dispatch();
+        })->name('SyncSecurityPricesByType')->dispatch();
 
     }
 }

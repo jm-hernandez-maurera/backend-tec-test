@@ -4,7 +4,6 @@ namespace App\Jobs;
 
 use App\Models\SecurityType;
 use App\Services\SyncSecurityPricesService;
-use Illuminate\Bus\Batch;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Bus;
@@ -34,7 +33,7 @@ class SyncSecurityPricesByTypeJob implements ShouldQueue
      */
     public function handle(SyncSecurityPricesService $syncSecurityPricesService): void
     {
-        if ($this->batch()->cancelled()) {
+        if ($this->batch()?->cancelled()) {
             // Determine if the batch has been cancelled...
             Log::notice("Batch SyncSecurityPricesByTypeJob for type {$this->securityType->slug} was cancelled.");
             return;
@@ -44,6 +43,7 @@ class SyncSecurityPricesByTypeJob implements ShouldQueue
 
         if (count($prices))
         {
+            Log::info("prices");
             Log::info($prices);
 
             $jobs = [];
@@ -52,21 +52,9 @@ class SyncSecurityPricesByTypeJob implements ShouldQueue
                 $jobs[] = new UpdateSecurityPricesJob($this->securityType, $chunkPrices);
             }
 
-            $batch = Bus::batch([$jobs])->before(function (Batch $batch) {
-                // The batch has been created but no jobs have been added...
-                Log::info("***SyncSecurityPricesByTypeJob: The batch has been created but no jobs have been added..");
-            })->progress(function (Batch $batch) {
-                // A single job has completed successfully...
-                Log::info("***SyncSecurityPricesByTypeJob: A single job has completed successfully...");
-            })->then(function (Batch $batch) {
-                // All jobs completed successfully...
-                Log::info("***SyncSecurityPricesByTypeJob: All jobs completed successfully...");
-            })->catch(function (Batch $batch, Throwable $e) {
-                // First batch job failure detected...
-                Log::info("***SyncSecurityPricesByTypeJob: First batch job failure detected...");
-            })->finally(function (Batch $batch) {
-                // The batch has finished executing...
-                Log::info("***SyncSecurityPricesByTypeJob: The batch has finished executing...");
+            Bus::chain($jobs)->catch(function ($e) {
+                // A job within the chain has failed...
+                Log::info("***SyncSecurityPricesByTypeJob: A job within the chain has failed...");
             })->dispatch();
 
         } else {
