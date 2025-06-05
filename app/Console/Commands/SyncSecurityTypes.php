@@ -19,7 +19,7 @@ class SyncSecurityTypes extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Command to dispatch synchronization job for external prices';
 
     /**
      * Execute the console command.
