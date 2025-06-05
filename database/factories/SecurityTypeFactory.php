@@ -17,7 +17,8 @@ class SecurityTypeFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'name' => fake()->company(),
+            'slug' => $this->faker->unique()->slug()
         ];
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Security;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +18,9 @@ class SecurityPriceFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'last_price' => fake()->randomFloat(2,1,1000),
+            'security_id' => Security::factory(),
+            'as_of_date' => fake()->dateTime
         ];
     }
 }

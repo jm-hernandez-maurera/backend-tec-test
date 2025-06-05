@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\SecurityType;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +18,8 @@ class SecurityFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'symbol' => fake()->companySuffix(),
+            'security_type_id' => SecurityType::factory()
         ];
     }
 }

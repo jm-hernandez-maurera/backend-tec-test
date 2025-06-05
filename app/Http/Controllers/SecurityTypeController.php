@@ -4,63 +4,27 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreSecurityTypeRequest;
 use App\Http\Requests\UpdateSecurityTypeRequest;
+use App\Jobs\SyncSecurityPricesByTypeJob;
 use App\Models\SecurityType;
+use App\Services\SyncSecurityPricesService;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class SecurityTypeController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    protected $syncSecurityPricesService;
+
+    public function __construct(SyncSecurityPricesService $syncSecurityPricesService)
     {
-        //
+        $this->syncSecurityPricesService = $syncSecurityPricesService;
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Synchronize and update the prices for a securityType in storage.
      */
-    public function create()
+    public function syncAndUpdatePrices(SecurityType $securityType)
     {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreSecurityTypeRequest $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(SecurityType $securityType)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(SecurityType $securityType)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateSecurityTypeRequest $request, SecurityType $securityType)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(SecurityType $securityType)
-    {
-        //
+        SyncSecurityPricesByTypeJob::dispatch($securityType);
+        return response()->json(['Security Prices will be synchronized.'], Response::HTTP_OK);
     }
 }
