@@ -43,9 +43,6 @@ class SyncSecurityPricesByTypeJob implements ShouldQueue
 
         if (count($prices))
         {
-            Log::info("prices");
-            Log::info($prices);
-
             $jobs = [];
 
             foreach (array_chunk($prices, config('app.external_prices_chunk')) as $chunkPrices){

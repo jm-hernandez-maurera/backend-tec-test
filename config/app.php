@@ -149,5 +149,5 @@ return [
         ]
     ],
 
-    'external_prices_chunk' => (int) env('EXTERNAL_PRICES_CHUNK', 1),
+    'external_prices_chunk' => (int) env('EXTERNAL_PRICES_CHUNK', 50),
 ];

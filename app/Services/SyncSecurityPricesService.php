@@ -67,14 +67,12 @@ class SyncSecurityPricesService
     public function getSecuritiesToSync(SecurityType $securityType, array $prices): Collection
     {
         $names = Arr::pluck($prices, 'symbol');
-        Log::info($names);
 
         $securities = $this->securityService->getAll([
             'ofType' => $securityType->id,
             'ofSymbols' => $names
         ], ['securityPrices']);
 
-        Log::info($securities);
         return $securities;
     }
 
@@ -114,14 +112,14 @@ class SyncSecurityPricesService
      */
     public function syncSecurityPricesByType(SecurityType $securityType, array $prices): void
     {
+        Log::info("**Synchronizing: {$securityType->slug}");
         $securities = $this->getSecuritiesToSync($securityType, $prices);
 
         if($securities->isNotEmpty()) {
 
             foreach ($prices as $price) {
                 Log::info($price);
-                $security = $securities->where('symbol', $price['symbol'])->first();  //Asumo que el symbol es unico ?
-                Log::info("SECURITY");
+                $security = $securities->where('symbol', $price['symbol'])->first();
                 Log::info($security);
                 $this->updateSecurityPriceBySecurity($security, $price);
             }
